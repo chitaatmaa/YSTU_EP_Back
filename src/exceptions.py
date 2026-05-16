@@ -121,6 +121,14 @@ class DepartmentShortNameIsNotUniqueException(HTTPException):
         )
 
 
+class DepartmentIsNotActualException(HTTPException):
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='Кафедра неактуальна, дисциплину к ней нельзя привязать.'
+        )
+
+
 class DirectionNotFoundException(HTTPException):
     def __init__(self):
         super().__init__(

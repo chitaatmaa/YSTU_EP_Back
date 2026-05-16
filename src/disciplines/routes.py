@@ -5,7 +5,7 @@ from typing import Annotated, Any
 from src.dependencies import SessionDep
 from src.exceptions import (
     DisciplineNotFoundException, DisciplineNameIsNotUniqueException, DisciplineShortNameIsNotUniqueException,
-    DepartmentNotFoundException
+    DepartmentNotFoundException, DepartmentIsNotActualException
 )
 from src.departments.model import Department
 from .model import Discipline
@@ -59,11 +59,12 @@ def update_discipline(
         if session.execute(stmt).scalar():
             raise DisciplineShortNameIsNotUniqueException()
 
-    if discipline_data.department_id:
-        if not session.get(Department, discipline_data.department_id):
-            raise DepartmentNotFoundException()
+    data = discipline_data.model_dump(exclude_unset=True)
+    if 'department_id' in data:
+        department = _resolve_department(session, data.get('department_id'))
+        data['department_id'] = department.id
 
-    for key, value in discipline_data.model_dump(exclude_none=True).items():
+    for key, value in data.items():
         setattr(discipline, key, value)
     session.commit()
     session.refresh(discipline)
@@ -100,6 +101,27 @@ def get_disciplines(session: SessionDep) -> list[DisciplineRead]:
     return disciplines
 
 
+def _get_ystu_department(session: SessionDep) -> Department:
+    ystu = session.execute(select(Department).where(Department.short_name == 'ЯГТУ')).scalar_one_or_none()
+    if ystu is None:
+        ystu = Department(name='ЯГТУ', short_name='ЯГТУ', is_actual=True)
+        session.add(ystu)
+        session.flush()
+    return ystu
+
+
+def _resolve_department(session: SessionDep, department_id: int | None) -> Department:
+    if department_id is None:
+        return _get_ystu_department(session)
+
+    department = session.get(Department, department_id)
+    if not department:
+        raise DepartmentNotFoundException()
+    if not department.is_actual:
+        raise DepartmentIsNotActualException()
+    return department
+
+
 @router.post(
     '',
     response_model=DisciplineRead,
@@ -122,10 +144,11 @@ def create_discipline(discipline_data: DisciplineCreate, session: SessionDep) ->
     if session.execute(stmt).scalar():
         raise DisciplineShortNameIsNotUniqueException()
 
-    if not session.get(Department, discipline_data.department_id):
-        raise DepartmentNotFoundException()
+    data = discipline_data.model_dump(exclude_unset=True)
+    department = _resolve_department(session, data.get('department_id'))
+    data['department_id'] = department.id
 
-    discipline = Discipline(**discipline_data.model_dump())
+    discipline = Discipline(**data)
     session.add(discipline)
     session.commit()
     session.refresh(discipline)

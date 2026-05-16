@@ -92,7 +92,7 @@ def export_map_excel(direction_id: Annotated[int, Path(gt=0)],
 
 
             exam_col = '+' if control_type == 'Экзамен' else ''
-            kursach_col = '+' if control_type == 'Курсовая работа' else ''
+            kursach_col = '+' if (control_type == 'Курсовая работа' or block.has_course_work) else ''
             diff_zachet_col = '+' if control_type == 'Диф. Зачёт' else ''
             zachet_col = '+' if control_type == 'Зачёт' else ''
 

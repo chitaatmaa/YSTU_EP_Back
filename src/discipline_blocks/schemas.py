@@ -11,6 +11,7 @@ class DisciplineBlockCreate(BaseModel):
     lab_hours: Annotated[int, Field(example=40)]
     semester_number: Annotated[int, Field(example=3)]
     map_core_id: Annotated[int, Field(example=1)]
+    has_course_work: Annotated[bool, Field(example=False)]
 
 
 class DisciplineBlockUpdate(BaseModel):
@@ -22,6 +23,7 @@ class DisciplineBlockUpdate(BaseModel):
     lab_hours: Annotated[int | None, Field(example=40)]
     semester_number: Annotated[int | None, Field(example=3)]
     map_core_id: Annotated[int | None, Field(example=1)]
+    has_course_work: Annotated[bool | None, Field(example=False)]
 
 
 class DisciplineBlockRead(DisciplineBlockCreate):

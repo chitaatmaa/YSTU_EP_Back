@@ -92,6 +92,7 @@ class MapsService:
                     'practice_hours': discipline_block.practice_hours,
                     'lab_hours': discipline_block.lab_hours,
                     'semester_number': discipline_block.semester_number,
+                    'has_course_work': discipline_block.has_course_work,
                     'map_core_id': map_core_id
                 }).id
 
@@ -172,6 +173,7 @@ class MapsService:
                 practice_hours=discipline_block.practice_hours,
                 lab_hours=discipline_block.lab_hours,
                 semester_number=discipline_block.semester_number,
+                has_course_work=discipline_block.has_course_work,
                 competencies=competencies_unload
             )
 

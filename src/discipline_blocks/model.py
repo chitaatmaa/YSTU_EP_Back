@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import Integer, ForeignKey, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.base_model import Base
@@ -17,3 +17,4 @@ class DisciplineBlock(Base):
     lab_hours: Mapped[int] = mapped_column(Integer, nullable=False)
     semester_number: Mapped[int] = mapped_column(Integer, nullable=False)
     map_core_id: Mapped[int] = mapped_column(Integer, ForeignKey('map_cors.id'))
+    has_course_work: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

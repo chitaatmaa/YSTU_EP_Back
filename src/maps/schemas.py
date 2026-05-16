@@ -58,7 +58,7 @@ class DepartmentUnload(BaseModel):
 class DisciplineUnload(BaseModel):
     id: Annotated[int, Field(example=1)]
     name: Annotated[str, Field(example='Проектный практикум')]
-    short_name: Annotated[str, Field(example='ПП')]
+    short_name: Annotated[str | None, Field(default=None, example='ПП')]
     department: DepartmentUnload
 
 

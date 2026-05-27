@@ -4,7 +4,8 @@ from sqlalchemy import select, exists, and_
 from typing import Annotated, Any
 from src.dependencies import SessionDep
 from src.exceptions import (
-    DisciplineNotFoundException, DisciplineNameIsNotUniqueException, DisciplineShortNameIsNotUniqueException,
+    DisciplineNotFoundException,
+    # DisciplineNameIsNotUniqueException, DisciplineShortNameIsNotUniqueException,
     DepartmentNotFoundException, DepartmentIsNotActualException
 )
 from src.departments.model import Department
@@ -47,17 +48,17 @@ def update_discipline(
     if not discipline:
         raise DisciplineNotFoundException()
 
-    if discipline_data.name:
-        stmt = select(exists().where(and_(Discipline.name == discipline_data.name, Discipline.id != discipline_id)))
-        if session.execute(stmt).scalar():
-            raise DisciplineNameIsNotUniqueException()
+    # if discipline_data.name:
+    #     stmt = select(exists().where(and_(Discipline.name == discipline_data.name, Discipline.id != discipline_id)))
+    #     if session.execute(stmt).scalar():
+    #         raise DisciplineNameIsNotUniqueException()
 
-    if discipline_data.short_name is not None:
-        stmt = select(exists().where(and_(
-            Discipline.short_name == discipline_data.short_name, Discipline.id != discipline_id
-        )))
-        if session.execute(stmt).scalar():
-            raise DisciplineShortNameIsNotUniqueException()
+    # if discipline_data.short_name is not None:
+    #     stmt = select(exists().where(and_(
+    #         Discipline.short_name == discipline_data.short_name, Discipline.id != discipline_id
+    #     )))
+    #     if session.execute(stmt).scalar():
+    #         raise DisciplineShortNameIsNotUniqueException()
 
     data = discipline_data.model_dump(exclude_unset=True)
     if 'department_id' in data:
@@ -136,14 +137,14 @@ def _resolve_department(session: SessionDep, department_id: int | None) -> Depar
 def create_discipline(discipline_data: DisciplineCreate, session: SessionDep) -> Any:
     """Create the discipline with the given information."""
 
-    stmt = select(exists().where(Discipline.name == discipline_data.name))
-    if session.execute(stmt).scalar():
-        raise DisciplineNameIsNotUniqueException()
+    # stmt = select(exists().where(Discipline.name == discipline_data.name))
+    # if session.execute(stmt).scalar():
+    #     raise DisciplineNameIsNotUniqueException()
 
-    if discipline_data.short_name is not None:
-        stmt = select(exists().where(Discipline.short_name == discipline_data.short_name))
-        if session.execute(stmt).scalar():
-            raise DisciplineShortNameIsNotUniqueException()
+    # if discipline_data.short_name is not None:
+    #     stmt = select(exists().where(Discipline.short_name == discipline_data.short_name))
+    #     if session.execute(stmt).scalar():
+    #         raise DisciplineShortNameIsNotUniqueException()
 
     data = discipline_data.model_dump(exclude_unset=True)
     department = _resolve_department(session, data.get('department_id'))
